@@ -34,3 +34,8 @@ getObs <- function(N,M,seed,errSeed) {
 
 getObs(10,3,seed=10,errSeed = c(31,13))
 
+
+library(purrr)
+squar3 <- function(x) {
+  return(x^2)
+}
