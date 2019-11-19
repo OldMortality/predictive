@@ -1,3 +1,5 @@
+
+
 # number of observations
 getN <- function() return(100) 
 getM <- function() return(5)
@@ -62,8 +64,8 @@ getErrs <- function(N,seeds) {
 getObs <- function(N,M,seed,errSeed) {
    apply(getErrs(N,errSeed),2,function(x) x + getX(N,M) %*%  matrix(data=getAlphas(M,seed),byrow=F,nrow= M + 1))
 }
-xnam <- paste0("x", 1:3)
-(fmla <- as.formula(paste("y ~ ", paste(xnam, collapse= "+"))))
+#xnam <- paste0("x", 1:3)
+#(fmla <- as.formula(paste("y ~ ", paste(xnam, collapse= "+"))))
 
 
 # takes a matrix, and returns another matrix, with only
@@ -92,22 +94,22 @@ m <- getModelSet(getM())
 # reads a model v, and returns a formula for glm
 #   eg aModel = c(1,0,1,1) 
 #   returns "y ~ A + C + D + E"
-createFormula <- function(aModel) {
+createFormula <- function(aModel,X) {
   paste( " y ~",
          paste(colnames(X)[which(aModel == 1)],
                collapse = "+",
                sep = ""  ))
 }
 
-createFormula(m[1,])
 
-createFormulaSet <- function(m) {
-  apply(m,1,FUN=createFormula)
+createFormulaSet <- function(m,X) {
+  apply(m,1,FUN=createFormula,X)
 }
 
 
 m <- getModelSet(M = 4)
-t1 <- createFormulaSet(m)
+t1 <- createFormulaSet(m,getX(N=getN(),M=getM()))
+
 
 
 X <- getX(N,M) #%*%  matrix(data=getAlphas(M,seed),byrow=F,nrow= M + 1)
@@ -119,7 +121,7 @@ applyModel <- function(forms,X,y) {
 }
 
 #apply(t1[1:3],1,applyModel,X,y)
-t1 <- createFormulaSet(m)
+#t1 <- createFormulaSet(m)
 
 # apply a set of models to the data.
 # returns a list of models.
@@ -127,7 +129,8 @@ applyModels <- function(modelSet,X,y) {
   apply(t(modelSet),2,applyModel,X,y)
 }
 
-applyModels(t1[1:4],X,y)
+applyModels(t1[1:4],getX(N=getN(),M=getM()),
+            y=getObs(getN(),getM(),getSeed(),errSeed=10))
 forms <- t1[1]
 
 # dim(X)
@@ -164,6 +167,8 @@ N=4
 M=2
 seed=10
 errSeed=c(1,2,3,4)
+getSeed <- function() return(10)
+
 
 # v1 is N-vector of the determinate part of the model
 # l1 is list of errors, 1 list for each simulation, each list contains N values.
@@ -173,7 +178,7 @@ addObsErr(v1,l1) {
 }
 
 getErrs(10,c(31,13))[[1]] 
-getObs(10,3,seed=10,errSeed = c(31,13))
+#getObs(10,3,seed=10,errSeed = c(31,13))
 
 measurevar <- "y"
 groupvars  <- c("x1","x2","x3")
